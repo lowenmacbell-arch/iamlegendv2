@@ -101,25 +101,25 @@
 
 ## 📦 Quick Start
 
-```bash
+bash
 git clone https://github.com/Stanytz378/IAMLEGEND.git
 cd IAMLEGEND
 npm install
 cp sample.env .env
 npm start
 
-🔐 Session Setup
+ ## 🔐 Session Setup
 SESSION_ID=your_session_id
 OWNER_NUMBER=255XXXXXXXXX
 
-⚙️ Configuration
+ ## ⚙️ Configuration
 BOT_NAME=IAMLEGEND
 OWNER_NUMBER=255XXXXXXXXX
 PREFIXES=.,!,/
 COMMAND_MODE=public
 TIMEZONE=Africa/Nairobi
 
-🖥️ VPS (Linux Server)
+ ## 🖥️ VPS (Linux Server)
 curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -
 sudo apt install nodejs git ffmpeg
 git clone https://github.com/Stanytz378/IAMLEGEND.git
@@ -128,7 +128,7 @@ npm install
 cp sample.env .env
 npm start
 
-📱 Termux (Android)
+ ## 📱 Termux (Android)
 pkg update && pkg upgrade
 pkg install git nodejs ffmpeg
 git clone https://github.com/Stanytz378/IAMLEGEND.git
@@ -137,7 +137,7 @@ npm install
 cp sample.env .env
 npm start
 
-🐳 Docker
+## 🐳 Docker
 docker build -t iamlegend .
 docker run -d -p 5000:5000 iamlegend
 
