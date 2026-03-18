@@ -31,7 +31,7 @@
 
 </div>
 
-<a href="https://enzo-md-sessions-generator-2.onrender.com/pair/"><img title="GET-SESSION ID HERE" src="https://img.shields.io/badge/GET-SESSION ID HERE-h?color=blue&style=for-the-badge&logo=java"/></a></p>
+<a href="https://pairing-web-su41.onrender.com//"><img title="GET-SESSION ID HERE" src="https://img.shields.io/badge/GET-SESSION ID HERE-h?color=blue&style=for-the-badge&logo=render"/></a></p>
 ---
 ## ⚡ One-Click Deployment
 
