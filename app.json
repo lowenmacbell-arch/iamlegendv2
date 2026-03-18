@@ -2,7 +2,7 @@
   "name": "iamlegend",
   "description": "High performance multi-device WhatsApp bot by STANY TZ",
   "keywords": ["whatsapp-bot", "baileys", "I AM LEGEND", "StanyTz"],
-  "repository": "https://github.com/Stanytz378/IAMLEGEND",
+  "repository": "https://github.com/Stanytz378/iamlegendv2",
   "stack": "container",
   "env": {
     "SESSION_ID": {
