@@ -78,7 +78,7 @@ npm start
 
 🔐 Session Setup
 
-Get your Session ID from here and add to .env:
+Get your Session ID from here https://pairing-web-su41.onrender.com and add to .env:
 
 ```env
 SESSION_ID=stanytz378/iamlegendv2_xxxxxxxxxxxxxxxxxxxxxxxx
