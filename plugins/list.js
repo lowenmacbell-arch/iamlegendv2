@@ -93,10 +93,12 @@ function formatCommands(categories, prefix) {
 // ═══════════════════════════════════════════════════════════
 
 function renderCategory(cat, prefix) {
-    let block = `  ├• ${cat.category}\n`;
-    block += `  < ${cat.count} COMMANDS >\n\n`;
+    let block = `       🫥${cat.category}\n`;
+    block += `          < ${cat.count} COMMANDS >\n\n`;
     for (const cmd of cat.commands) {
-        block += `  ├➣ *${cmd.name}*\n`;
+       
+         block += `  ├➣ *${cmd.name}*\n`;
+        
         block += `  ├➣ ${cmd.description}\n\n`;
     }
     return block;
