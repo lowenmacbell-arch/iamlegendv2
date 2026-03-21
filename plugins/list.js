@@ -17,10 +17,10 @@ function getTimePeriod() {
 
 function getGreeting(period, name) {
     const greetings = {
-        morning: [`Good morning, @${name}`, `Rise and shine, @${name}`, `Morning vibes, @${name}`],
-        afternoon: [`Good afternoon, @${name}`, `Afternoon energy, @${name}`, `Keep going, @${name}`],
-        evening: [`Good evening, @${name}`, `Evening calm, @${name}`, `Unwind time, @${name}`],
-        night: [`Good night, @${name}`, `Late night mode, @${name}`, `Rest well, @${name}`]
+        morning:  [`Good morning, @${name}`, `Rise and shine, @${name}`, `Morning vibes, @${name}`],
+        afternoon:[`Good afternoon, @${name}`, `Afternoon energy, @${name}`, `Keep going, @${name}`],
+        evening:  [`Good evening, @${name}`, `Evening calm, @${name}`, `Unwind time, @${name}`],
+        night:    [`Good night, @${name}`, `Late night mode, @${name}`, `Rest well, @${name}`]
     };
     const list = greetings[period] || greetings.evening;
     return list[Math.floor(Math.random() * list.length)];
@@ -71,10 +71,12 @@ function getChatType(context) {
 function formatCommands(categories, prefix) {
     const result = [];
     let totalCount = 0;
+    
     for (const [cat, cmds] of categories) {
         const catUpper = cat.toUpperCase();
         const catData = { category: catUpper, count: cmds.length, commands: [] };
         totalCount += cmds.length;
+        
         for (const cmdName of cmds) {
             const cmd = commandHandler.commands.get(cmdName);
             if (!cmd) continue;
@@ -93,12 +95,11 @@ function formatCommands(categories, prefix) {
 // ═══════════════════════════════════════════════════════════
 
 function renderCategory(cat, prefix) {
-    let block = `               ➡️${cat.category}\n`;
-    block += `              *↗️${cat.count} COMMANDS⤵️*\n\n`;
+    let block = `               ➡️ ${cat.category}\n`;
+    block += `              *↗️ ${cat.count} COMMANDS⤵️*\n\n`;
+    
     for (const cmd of cat.commands) {
-       
-         block += `  ├➣ *${cmd.name}*\n`;
-        
+        block += `  ├➣ *${cmd.name}*\n`;
         block += `  ├➣ ${cmd.description}\n\n`;
     }
     return block;
@@ -110,7 +111,9 @@ function renderCategory(cat, prefix) {
 // ═══════════════════════════════════════════════════════════
 
 const menuStyles = [
-    // ========== COMPACT BOX (styles 1–4) ==========
+    // ═══════════════════════════════════════════════════════
+    // COMPACT BOX (styles 1–4)
+    // ═══════════════════════════════════════════════════════
     {
         name: 'Compact Box #1',
         render: ({ greeting, quote, info, categories, prefix, timeSign, chatType }) => {
@@ -120,6 +123,7 @@ const menuStyles = [
             t += `│ ${quote}\n│\n`;
             t += `│ Owner: ${info.owner}\n`;
             t += `│ Total: ${info.total} commands\n│\n`;
+            
             for (const cat of categories) {
                 t += `│  ├• ${cat.category}\n`;
                 t += `│  < ${cat.count} COMMANDS >\n│\n`;
@@ -186,7 +190,9 @@ const menuStyles = [
         }
     },
 
-    // ========== PURE MINIMAL (styles 5–8) ==========
+    // ═══════════════════════════════════════════════════════
+    // PURE MINIMAL (styles 5–8)
+    // ═══════════════════════════════════════════════════════
     {
         name: 'Pure Minimal #1',
         render: ({ greeting, quote, info, categories, prefix, timeSign, chatType }) => {
@@ -240,7 +246,9 @@ const menuStyles = [
         }
     },
 
-    // ========== SMOOTH EDGE (styles 9–12) ==========
+    // ═══════════════════════════════════════════════════════
+    // SMOOTH EDGE (styles 9–12)
+    // ═══════════════════════════════════════════════════════
     {
         name: 'Smooth Edge #1',
         render: ({ greeting, quote, info, categories, prefix, timeSign, chatType }) => {
@@ -315,7 +323,9 @@ const menuStyles = [
         }
     },
 
-    // ========== FRESH LINE (styles 13–16) ==========
+    // ═══════════════════════════════════════════════════════
+    // FRESH LINE (styles 13–16)
+    // ═══════════════════════════════════════════════════════
     {
         name: 'Fresh Line #1',
         render: ({ greeting, quote, info, categories, prefix, timeSign, chatType }) => {
@@ -373,7 +383,9 @@ const menuStyles = [
         }
     },
 
-    // ========== SOFT FRAME (styles 17–20) ==========
+    // ═══════════════════════════════════════════════════════
+    // SOFT FRAME (styles 17–20)
+    // ═══════════════════════════════════════════════════════
     {
         name: 'Soft Frame #1',
         render: ({ greeting, quote, info, categories, prefix, timeSign, chatType }) => {
@@ -474,6 +486,7 @@ export default {
         if (args.length && args[0] !== 'style' && !args[0].match(/^\d+$/)) {
             const searchTerm = args[0].toLowerCase();
             let cmd = commandHandler.commands.get(searchTerm);
+            
             if (!cmd && commandHandler.aliases.has(searchTerm)) {
                 const mainCommand = commandHandler.aliases.get(searchTerm);
                 cmd = commandHandler.commands.get(mainCommand);
@@ -514,7 +527,9 @@ export default {
 
         // ─── Select random style (or a specific one if given) ───
         const styleIndex = args.find(a => a.match(/^\d+$/));
-        const style = styleIndex ? menuStyles[parseInt(styleIndex) - 1] : pick(menuStyles);
+        const style = styleIndex 
+            ? menuStyles[parseInt(styleIndex) - 1] 
+            : pick(menuStyles);
 
         // ─── Render menu using the chosen style ───
         const text = style.render({
@@ -535,19 +550,23 @@ export default {
         });
 
         // ─── Send message with mention ───
+        const sendOptions = {
+            mentions: [senderId],
+            ...channelInfo
+        };
+
         if (fs.existsSync(imagePath)) {
             await sock.sendMessage(chatId, {
                 image: { url: imagePath },
                 caption: text,
-                mentions: [senderId],
-                ...channelInfo
+                ...sendOptions
             }, { quoted: message });
         } else {
             await sock.sendMessage(chatId, {
                 text,
-                mentions: [senderId],
-                ...channelInfo
+                ...sendOptions
             }, { quoted: message });
         }
     }
 };
+
