@@ -65,7 +65,7 @@ function getChatType(context) {
 }
 
 // ─────────────────────────────────────────────────────────────
-// 📋 COMMAND FORMATTER (includes aliases)
+// 📋 COMMAND FORMATTER (collects commands per category)
 // ─────────────────────────────────────────────────────────────
 
 function formatCommands(categories, prefix) {
@@ -80,7 +80,6 @@ function formatCommands(categories, prefix) {
             if (!cmd) continue;
             const desc = cmd.description || cmd.usage || 'No description';
             const nameUpper = cmdName.toUpperCase();
-            // Aliases: store as an array of strings without prefix (for rendering)
             const aliases = cmd.aliases || [];
             catData.commands.push({ name: nameUpper, description: desc, aliases });
         }
@@ -111,7 +110,6 @@ const categoryEmojis = {
     'QUOTES': '💬',
     'MUSIC': '🎵',
     'UTILITY': '📂',
-    // default fallback
     'DEFAULT': '📁'
 };
 
@@ -120,7 +118,7 @@ function getCategoryEmoji(category) {
 }
 
 // ─────────────────────────────────────────────────────────────
-// 📄 RENDER A CATEGORY BLOCK (new style with aliases on separate line)
+// 📄 RENDER CATEGORY (the one you wanted)
 // ─────────────────────────────────────────────────────────────
 
 function renderCategory(cat, prefix) {
@@ -141,321 +139,26 @@ function renderCategory(cat, prefix) {
 }
 
 // ─────────────────────────────────────────────────────────────
-// 🎨 20 STYLES (borders only, internal layout unified)
+// 🧹 CLEAN MENU RENDER (single style, no style selection)
 // ─────────────────────────────────────────────────────────────
 
-const menuStyles = [
-    // 1: Premium Box
-    { render: ({ greeting, quote, info, categories, prefix, timeSign, chatType }) => {
-        let t = `┌─────────────────┐\n`;
-        t += `│   IAMLEGEND     │\n`;
-        t += `├─────────────────┤\n`;
-        t += `│ ${timeSign} ${greeting}\n`;
-        t += `│ ⏱ ${info.time}  •  ${chatType}\n`;
-        t += `│ ${quote}\n`;
-        t += `├─────────────────┤\n`;
-        t += `│ Owner: ${info.owner}\n`;
-        t += `│ Total: ${info.total} commands\n`;
-        t += `└─────────────────┘\n\n`;
-        for (const cat of categories) t += renderCategory(cat, prefix);
-        t += `───────────────────\n`;
-        t += `   🔥 ${info.bot} v${info.version}\n`;
-        return t;
-    }},
-    // 2: Clean Edge
-    { render: ({ greeting, quote, info, categories, prefix, timeSign, chatType }) => {
-        let t = `╭─────────────────╮\n`;
-        t += `│   IAMLEGEND     │\n`;
-        t += `╰─────────────────╯\n\n`;
-        t += `${timeSign} ${greeting}\n`;
-        t += `⏱ ${info.time}  •  ${chatType}\n`;
-        t += `${quote}\n\n`;
-        t += `Owner: ${info.owner}  •  Total: ${info.total}\n\n`;
-        for (const cat of categories) t += renderCategory(cat, prefix);
-        t += `───────────────────\n`;
-        t += `   🔥 ${info.bot} v${info.version}\n`;
-        return t;
-    }},
-    // 3: Minimal Line
-    { render: ({ greeting, quote, info, categories, prefix, timeSign, chatType }) => {
-        let t = `── IAMLEGEND ──\n\n`;
-        t += `${timeSign} ${greeting}\n`;
-        t += `⏱ ${info.time}  •  ${chatType}\n`;
-        t += `${quote}\n\n`;
-        t += `Owner: ${info.owner}  |  Total: ${info.total}\n\n`;
-        for (const cat of categories) t += renderCategory(cat, prefix);
-        t += `───────────────────\n`;
-        t += `   🔥 ${info.bot} v${info.version}\n`;
-        return t;
-    }},
-    // 4: Soft Frame
-    { render: ({ greeting, quote, info, categories, prefix, timeSign, chatType }) => {
-        let t = `╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌\n`;
-        t += ` IAMLEGEND\n`;
-        t += `╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌\n`;
-        t += ` ${timeSign} ${greeting}\n`;
-        t += ` ⏱ ${info.time}  •  ${chatType}\n`;
-        t += ` ${quote}\n`;
-        t += `╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌\n`;
-        t += ` Owner: ${info.owner}\n`;
-        t += ` Total: ${info.total} commands\n`;
-        t += `╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌\n\n`;
-        for (const cat of categories) t += renderCategory(cat, prefix);
-        t += `╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌\n`;
-        t += `   🔥 ${info.bot} v${info.version}\n`;
-        return t;
-    }},
-    // 5: Sharp Corner
-    { render: ({ greeting, quote, info, categories, prefix, timeSign, chatType }) => {
-        let t = `┌──────────────┐\n`;
-        t += `│IAMLEGEND│\n`;
-        t += `└──────────────┘\n\n`;
-        t += `${timeSign} ${greeting}\n`;
-        t += `⏱ ${info.time}  •  ${chatType}\n`;
-        t += `${quote}\n\n`;
-        t += `Owner: ${info.owner}  •  Total: ${info.total}\n\n`;
-        for (const cat of categories) t += renderCategory(cat, prefix);
-        t += `───────────────────\n`;
-        t += `   🔥 ${info.bot} v${info.version}\n`;
-        return t;
-    }},
-    // 6: Simple Bar
-    { render: ({ greeting, quote, info, categories, prefix, timeSign, chatType }) => {
-        let t = `│ IAMLEGEND │\n`;
-        t += `─────────────────\n\n`;
-        t += `${timeSign} ${greeting}\n`;
-        t += `⏱ ${info.time}  •  ${chatType}\n`;
-        t += `${quote}\n\n`;
-        t += `Owner: ${info.owner}  •  Total: ${info.total}\n\n`;
-        t += `─────────────────\n\n`;
-        for (const cat of categories) t += renderCategory(cat, prefix);
-        t += `─────────────────\n`;
-        t += `   🔥 ${info.bot} v${info.version}\n`;
-        return t;
-    }},
-    // 7: Elegant Thin
-    { render: ({ greeting, quote, info, categories, prefix, timeSign, chatType }) => {
-        let t = `╭──────────────╮\n`;
-        t += `│IAMLEGEND│\n`;
-        t += `╰──────────────╯\n\n`;
-        t += `${timeSign} ${greeting}  •  ⏱ ${info.time}\n`;
-        t += `${chatType}  •  ${quote}\n\n`;
-        t += `Owner: ${info.owner}  •  Total: ${info.total}\n\n`;
-        for (const cat of categories) t += renderCategory(cat, prefix);
-        t += `───────────────────\n`;
-        t += `   🔥 ${info.bot} v${info.version}\n`;
-        return t;
-    }},
-    // 8: Classic Minimal
-    { render: ({ greeting, quote, info, categories, prefix, timeSign, chatType }) => {
-        let t = `═════════════════\n`;
-        t += `  IAMLEGEND\n`;
-        t += `═════════════════\n\n`;
-        t += `  ${timeSign} ${greeting}\n`;
-        t += `  ⏱ ${info.time}  •  ${chatType}\n`;
-        t += `  ${quote}\n\n`;
-        t += `  Owner: ${info.owner}\n`;
-        t += `  Total: ${info.total} commands\n\n`;
-        t += `═════════════════\n\n`;
-        for (const cat of categories) t += renderCategory(cat, prefix);
-        t += `═════════════════\n`;
-        t += `   🔥 ${info.bot} v${info.version}\n`;
-        return t;
-    }},
-    // 9: Fresh Line
-    { render: ({ greeting, quote, info, categories, prefix, timeSign, chatType }) => {
-        let t = `IAMLEGEND\n`;
-        t += `─────────────\n\n`;
-        t += `${timeSign} ${greeting}\n`;
-        t += `⏱ ${info.time}  •  ${chatType}\n`;
-        t += `${quote}\n\n`;
-        t += `Owner: ${info.owner}  •  Total: ${info.total}\n\n`;
-        for (const cat of categories) t += renderCategory(cat, prefix);
-        t += `─────────────\n`;
-        t += `   🔥 ${info.bot} v${info.version}\n`;
-        return t;
-    }},
-    // 10: Smooth Edge
-    { render: ({ greeting, quote, info, categories, prefix, timeSign, chatType }) => {
-        let t = `╌──────────────╌\n`;
-        t += `  IAMLEGEND\n`;
-        t += `╌──────────────╌\n\n`;
-        t += `  ${timeSign} ${greeting}\n`;
-        t += `  ⏱ ${info.time}\n`;
-        t += `  ${chatType}\n`;
-        t += `  ${quote}\n\n`;
-        t += `  Owner: ${info.owner}\n`;
-        t += `  Total: ${info.total} commands\n\n`;
-        t += `╌──────────────╌\n\n`;
-        for (const cat of categories) t += renderCategory(cat, prefix);
-        t += `╌──────────────╌\n`;
-        t += `   🔥 ${info.bot} v${info.version}\n`;
-        return t;
-    }},
-    // 11: Pure Minimal
-    { render: ({ greeting, quote, info, categories, prefix, timeSign, chatType }) => {
-        let t = `IAMLEGEND\n\n`;
-        t += `${timeSign} ${greeting}\n`;
-        t += `⏱ ${info.time}  •  ${chatType}\n`;
-        t += `${quote}\n\n`;
-        t += `Owner: ${info.owner}  •  Total: ${info.total}\n\n`;
-        for (const cat of categories) t += renderCategory(cat, prefix);
-        t += `───────────────────\n`;
-        t += `   🔥 ${info.bot} v${info.version}\n`;
-        return t;
-    }},
-    // 12: Clean Box
-    { render: ({ greeting, quote, info, categories, prefix, timeSign, chatType }) => {
-        let t = `┌───────────┐\n`;
-        t += `│IAMLEGEND│\n`;
-        t += `├───────────┤\n`;
-        t += `│${timeSign} ${greeting}│\n`;
-        t += `│⏱ ${info.time}  •  ${chatType}│\n`;
-        t += `│${quote}│\n`;
-        t += `├───────────┤\n`;
-        t += `│Owner: ${info.owner}│\n`;
-        t += `│Total: ${info.total}│\n`;
-        t += `└───────────┘\n\n`;
-        for (const cat of categories) t += renderCategory(cat, prefix);
-        t += `─────────────\n`;
-        t += `   🔥 ${info.bot} v${info.version}\n`;
-        return t;
-    }},
-    // 13: Slim Frame
-    { render: ({ greeting, quote, info, categories, prefix, timeSign, chatType }) => {
-        let t = `│─────────────│\n`;
-        t += `│  IAMLEGEND  │\n`;
-        t += `│─────────────│\n`;
-        t += `│${timeSign} ${greeting}│\n`;
-        t += `│⏱ ${info.time}│\n`;
-        t += `│${chatType}│\n`;
-        t += `│${quote}│\n`;
-        t += `│─────────────│\n`;
-        t += `│Owner: ${info.owner}│\n`;
-        t += `│Total: ${info.total}│\n`;
-        t += `│─────────────│\n\n`;
-        for (const cat of categories) t += renderCategory(cat, prefix);
-        t += `│─────────────│\n`;
-        t += `│ 🔥 ${info.bot} v${info.version} │\n`;
-        return t;
-    }},
-    // 14: Light Border
-    { render: ({ greeting, quote, info, categories, prefix, timeSign, chatType }) => {
-        let t = `╭────────────╮\n`;
-        t += `│IAMLEGEND│\n`;
-        t += `╰────────────╯\n\n`;
-        t += `${timeSign} ${greeting}\n`;
-        t += `⏱ ${info.time}  •  ${chatType}\n`;
-        t += `${quote}\n\n`;
-        t += `Owner: ${info.owner}  •  Total: ${info.total}\n\n`;
-        for (const cat of categories) t += renderCategory(cat, prefix);
-        t += `─────────────\n`;
-        t += `   🔥 ${info.bot} v${info.version}\n`;
-        return t;
-    }},
-    // 15: Ultimate Clean
-    { render: ({ greeting, quote, info, categories, prefix, timeSign, chatType }) => {
-        let t = `IAMLEGEND\n`;
-        t += `──────────────\n\n`;
-        t += `${timeSign} ${greeting}\n`;
-        t += `⏱ ${info.time}  •  ${chatType}\n`;
-        t += `${quote}\n\n`;
-        t += `Owner: ${info.owner}\n`;
-        t += `Total: ${info.total} commands\n\n`;
-        t += `──────────────\n\n`;
-        for (const cat of categories) t += renderCategory(cat, prefix);
-        t += `──────────────\n`;
-        t += `   🔥 ${info.bot} v${info.version}\n`;
-        return t;
-    }},
-    // 16: Dot Border
-    { render: ({ greeting, quote, info, categories, prefix, timeSign, chatType }) => {
-        let t = `•••••••••••••••\n`;
-        t += `  IAMLEGEND\n`;
-        t += `•••••••••••••••\n\n`;
-        t += `  ${timeSign} ${greeting}\n`;
-        t += `  ⏱ ${info.time}  •  ${chatType}\n`;
-        t += `  ${quote}\n\n`;
-        t += `  Owner: ${info.owner}\n`;
-        t += `  Total: ${info.total} commands\n\n`;
-        t += `•••••••••••••••\n\n`;
-        for (const cat of categories) t += renderCategory(cat, prefix);
-        t += `•••••••••••••••\n`;
-        t += `   🔥 ${info.bot} v${info.version}\n`;
-        return t;
-    }},
-    // 17: Angle Frame
-    { render: ({ greeting, quote, info, categories, prefix, timeSign, chatType }) => {
-        let t = `•────────────•\n`;
-        t += `│IAMLEGEND│\n`;
-        t += `•────────────•\n\n`;
-        t += `${timeSign} ${greeting}\n`;
-        t += `⏱ ${info.time}  •  ${chatType}\n`;
-        t += `${quote}\n\n`;
-        t += `Owner: ${info.owner}  •  Total: ${info.total}\n\n`;
-        for (const cat of categories) t += renderCategory(cat, prefix);
-        t += `─────────────\n`;
-        t += `   🔥 ${info.bot} v${info.version}\n`;
-        return t;
-    }},
-    // 18: Double Line
-    { render: ({ greeting, quote, info, categories, prefix, timeSign, chatType }) => {
-        let t = `═────────────═\n`;
-        t += `  IAMLEGEND\n`;
-        t += `═────────────═\n\n`;
-        t += `  ${timeSign} ${greeting}\n`;
-        t += `  ⏱ ${info.time}\n`;
-        t += `  ${chatType}\n`;
-        t += `  ${quote}\n\n`;
-        t += `  Owner: ${info.owner}\n`;
-        t += `  Total: ${info.total} commands\n\n`;
-        t += `═────────────═\n\n`;
-        for (const cat of categories) t += renderCategory(cat, prefix);
-        t += `═────────────═\n`;
-        t += `   🔥 ${info.bot} v${info.version}\n`;
-        return t;
-    }},
-    // 19: Compact Box
-    { render: ({ greeting, quote, info, categories, prefix, timeSign, chatType }) => {
-        let t = `┌─ IAMLEGEND\n│\n`;
-        t += `│ ${timeSign} ${greeting}\n`;
-        t += `│ ⏱ ${info.time}  •  ${chatType}\n`;
-        t += `│ ${quote}\n│\n`;
-        t += `│ Owner: ${info.owner}\n`;
-        t += `│ Total: ${info.total} commands\n│\n`;
-        for (const cat of categories) {
-            t += `│  ├─────▶ ${getCategoryEmoji(cat.category)} ${cat.category}\n│\n`;
-            for (const cmd of cat.commands) {
-                t += `│  ├➣ *${cmd.name}*\n`;
-                if (cmd.aliases && cmd.aliases.length) {
-                    t += `│  ├${cmd.aliases.map(a => `${prefix}${a}`).join(', ')}\n`;
-                }
-                t += `│  ╰➣ ${cmd.description}\n`;
-            }
-            t += `│\n`;
-        }
-        t += `└─\n`;
-        t += `    ${info.bot} v${info.version}\n`;
-        return t;
-    }},
-    // 20: Minimal Edge
-    { render: ({ greeting, quote, info, categories, prefix, timeSign, chatType }) => {
-        let t = `IAMLEGEND\n`;
-        t += `──────────────────\n\n`;
-        t += `${timeSign} ${greeting}\n`;
-        t += `⏱ ${info.time}  •  ${chatType}\n`;
-        t += `${quote}\n\n`;
-        t += `Owner: ${info.owner}\n`;
-        t += `Total: ${info.total} commands\n\n`;
-        t += `──────────────────\n\n`;
-        for (const cat of categories) t += renderCategory(cat, prefix);
-        t += `──────────────────\n`;
-        t += `    ${info.bot} v${info.version}\n`;
-        return t;
-    }}
-];
+function renderCleanMenu({ greeting, quote, info, categories, prefix, timeSign, chatType }) {
+    let text = `*${info.bot}*\n`;
+    text += `⏱ ${info.time}\n`;
+    text += `${timeSign} ${greeting}\n`;
+    text += `💬 ${quote}\n\n`;
+    text += `📋 Total commands: ${info.total}\n`;
+    text += `👤 Owner: ${info.owner}\n\n`;
+    text += `────────────────────\n\n`;
 
-const pick = (arr) => arr[Math.floor(Math.random() * arr.length)];
+    for (const cat of categories) {
+        text += renderCategory(cat, prefix);
+    }
+
+    text += `────────────────────\n`;
+    text += `✨ ${info.bot} v${info.version} ✨`;
+    return text;
+}
 
 // ═══════════════════════════════════════════════════════════
 // 🤖 MAIN COMMAND HANDLER
@@ -474,7 +177,7 @@ export default {
         const imagePath = path.join(process.cwd(), 'assets/thumb.png');
 
         // ─── Handle command lookup ───
-        if (args.length && args[0] !== 'style' && !args[0].match(/^\d+$/)) {
+        if (args.length && !args[0].match(/^\d+$/)) {
             const searchTerm = args[0].toLowerCase();
             let cmd = commandHandler.commands.get(searchTerm);
             if (!cmd && commandHandler.aliases.has(searchTerm)) {
@@ -515,12 +218,8 @@ export default {
         const formattedCategories = formatCommands(commandHandler.categories, prefix);
         const chatType = getChatType({ isGroup, isPrivate });
 
-        // ─── Select random style (or a specific one if given) ───
-        const styleIndex = args.find(a => a.match(/^\d+$/));
-        const style = styleIndex ? menuStyles[parseInt(styleIndex) - 1] : pick(menuStyles);
-
-        // ─── Render menu using the chosen style ───
-        const text = style.render({
+        // ─── Render menu using clean style ───
+        const text = renderCleanMenu({
             greeting,
             quote,
             prefix,
