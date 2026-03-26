@@ -1,18 +1,3 @@
-/*****************************************************************************
- *                                                                           *
- *                     Developed By STANY TZ                                 *
- *                                                                           *
- *  🌐  GitHub   : https://github.com/Stanytz378                             *
- *  ▶️  YouTube  : https://youtube.com/@STANYTZ                              *
- *  💬  WhatsApp : https://whatsapp.com/channel/0029Vb7fzu4EwEjmsD4Tzs1p     *
- *                                                                           *
- *    © 2026 STANY TZ. All rights reserved.                                 *
- *                                                                           *
- *    Description: This file is part of the ᴵ ᴬᴹ ᴸᴱᴳᴱᴺᴰ ⱽ¹.⁰.⁰ Project.     *
- *                 Unauthorized copying or distribution is prohibited.      *
- *                                                                           *
- ***************************************************************************/
-
 import 'dotenv/config';
 
 import fs, { existsSync, mkdirSync, rmSync } from 'fs';
@@ -564,7 +549,7 @@ setInterval(() => {
         for (const file of files) {
             if (file === 'creds.json') continue;
             if (file.startsWith('app-state-sync-key-')) continue;
-            fs.unlink(path.join(sessionDir, file), () => {});
+            fs.unlink(path.join(sessionDir, file), () => { });
         }
     });
 }, 3 * 60 * 1000);
@@ -584,7 +569,7 @@ setInterval(() => {
             const filePath = path.join(customTemp, file);
             fs.stat(filePath, (err, stats) => {
                 if (!err && Date.now() - stats.mtimeMs > 3 * 60 * 60 * 1000) {
-                    fs.unlink(filePath, () => {});
+                    fs.unlink(filePath, () => { });
                 }
             });
         }
