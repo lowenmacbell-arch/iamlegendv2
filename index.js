@@ -1,5 +1,17 @@
 import 'dotenv/config';
 
+// ─────────────────────────────────────────────────────────────
+// GLOBAL ERROR HANDLERS – MUST BE EARLY
+// ─────────────────────────────────────────────────────────────
+process.on('uncaughtException', (err) => {
+    console.error('❌ UNCAUGHT EXCEPTION:', err);
+    // Keep the process alive – log but don't exit (unless we decide)
+});
+process.on('unhandledRejection', (reason, promise) => {
+    console.error('❌ UNHANDLED REJECTION:', reason);
+});
+// ─────────────────────────────────────────────────────────────
+
 import fs, { existsSync, mkdirSync, rmSync } from 'fs';
 import path, { dirname } from 'path';
 import chalk from 'chalk';
@@ -24,7 +36,9 @@ import { writeErrorLog } from './lib/logger.js';
 import { handleMessages, handleGroupParticipantUpdate, handleStatus, handleCall } from './lib/messageHandler.js';
 import commandHandler from './lib/commandHandler.js';
 
+console.log('🔍 [DEBUG] Starting bot...');
 store.readFromFile();
+console.log('🔍 [DEBUG] store.readFromFile done');
 setInterval(() => store.writeToFile(), config.storeWriteInterval || 10000);
 setInterval(() => {
     if (global.gc) {
@@ -65,12 +79,14 @@ const DATA_DEFAULTS = {
     'antibadword.json': {},
 };
 
+console.log('🔍 [DEBUG] Creating data directory...');
 fs.mkdirSync('./data', { recursive: true });
 for (const [file, def] of Object.entries(DATA_DEFAULTS)) {
     const fp = `./data/${file}`;
     if (!fs.existsSync(fp))
         fs.writeFileSync(fp, JSON.stringify(def, null, 2));
 }
+console.log('🔍 [DEBUG] Data directory ready');
 
 let owner = [];
 try {
@@ -188,16 +204,21 @@ async function initializeSession() {
     }
 }
 
+console.log('🔍 [DEBUG] Starting server...');
 server.listen(PORT, () => {
     printLog('success', `Server listening on port ${PORT}`);
 });
+console.log('🔍 [DEBUG] Server started (async)');
 
 async function startStanyTZ() {
+    console.log('🔍 [DEBUG] startStanyTZ called');
     try {
         const { version } = await fetchLatestBaileysVersion();
+        console.log('🔍 [DEBUG] Version fetched');
         ensureSessionDirectory();
         await delay(1000);
         const { state, saveCreds } = await useMultiFileAuthState(`./session`);
+        console.log('🔍 [DEBUG] Auth state loaded');
         const _saveCreds = async () => {
             ensureSessionDirectory();
             await saveCreds();
@@ -229,6 +250,7 @@ async function startStanyTZ() {
         });
 
         StanyTZ.store = store;
+        console.log('🔍 [DEBUG] Socket created');
 
         const originalSendPresenceUpdate = StanyTZ.sendPresenceUpdate;
         const originalReadMessages = StanyTZ.readMessages;
@@ -359,6 +381,7 @@ async function startStanyTZ() {
 
         StanyTZ.public = true;
         StanyTZ.serializeM = (m) => smsg(StanyTZ, m, store);
+        console.log('🔍 [DEBUG] Socket fully configured');
 
         const isRegistered = state.creds?.registered === true;
 
@@ -516,6 +539,7 @@ async function startStanyTZ() {
         return StanyTZ;
     } catch (error) {
         printLog('error', `Error in startStanyTZ: ${error.message}`);
+        console.error(error.stack);
         if (rl && !rlClosed) {
             rl.close();
             rl = null;
@@ -526,11 +550,17 @@ async function startStanyTZ() {
 }
 
 async function main() {
+    console.log('🔍 [DEBUG] main() called');
     await compileAll();
+    console.log('🔍 [DEBUG] compileAll done');
     await commandHandler.loadCommands();
+    console.log('🔍 [DEBUG] loadCommands done');
     printLog('info', 'Starting ᴵ ᴬᴹ ᴸᴱᴳᴱᴺᴰ BOT...');
+    console.log('🔍 [DEBUG] Before initializeSession');
     await initializeSession();
+    console.log('🔍 [DEBUG] After initializeSession');
     await delay(3000);
+    console.log('🔍 [DEBUG] Before startStanyTZ');
     startStanyTZ().catch((error) => {
         printLog('error', `Fatal error: ${error.message}`);
         if (rl && !rlClosed) rl.close();
@@ -538,7 +568,13 @@ async function main() {
     });
 }
 
-main();
+// Wrap main in a try/catch to log any synchronous errors
+try {
+    main();
+} catch (err) {
+    console.error('❌ Error in main:', err);
+    process.exit(1);
+}
 
 // Session cleanup interval
 const sessionDir = path.join(process.cwd(), 'session');
@@ -602,7 +638,7 @@ folders.forEach(folder => {
         });
 });
 
-// Error handlers
+// Error handlers (already at top, but keep these for redundancy)
 process.on('uncaughtException', (err) => {
     printLog('error', `Uncaught Exception: ${err.message}`);
     console.error(err.stack);
